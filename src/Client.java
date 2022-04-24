@@ -35,55 +35,56 @@ public class Client extends Thread {
         this.login = "nazwa";
 
         Font font = new Font("Verdana", Font.PLAIN, 12);
+        Font fontDisconnect=new Font("Monospaced",Font.BOLD,25);
 
         //FRAME
         final JFrame jfr = new JFrame("CatchMe Klient");
         jfr.getContentPane().setLayout(null);
-        jfr.setSize(700, 500);
+        jfr.setSize(800, 600);
         jfr.setResizable(false);
         jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //LIST
-        jtpList.setBounds(520, 25, 156, 320);
+        jtpList.setBounds(520, 10, 255, 450);
         jtpList.setEditable(true);
         jtpList.setFont(font);
-        jtpList.setMargin(new Insets(6, 6, 6, 6));
+        jtpList.setMargin(new Insets(5, 5, 5, 5));
         jtpList.setEditable(false);
         JScrollPane jtpListSP = new JScrollPane(jtpList);
-        jtpListSP.setBounds(520, 25, 156, 320);
+        jtpListSP.setBounds(520, 10, 255, 450);
 
         jtpList.setContentType("text/html");
         jtpList.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
         //INPUT FOR MESSAGE
-        jtfMessage.setBounds(0, 350, 400, 50);
+        jtfMessage.setBounds(10, 465, 650, 35);
         jtfMessage.setFont(font);
-        jtfMessage.setMargin(new Insets(6, 6, 6, 6));
+        jtfMessage.setMargin(new Insets(5, 5, 5, 5));
         final JScrollPane jtfMessageSP = new JScrollPane(jtfMessage);
-        jtfMessageSP.setBounds(25, 350, 650, 50);
+        jtfMessageSP.setBounds(10, 465, 650, 35);
 
 
 
         //BUTTON FOR SENDING
         final JButton jbSend = new JButton("Wyślij");
         jbSend.setFont(font);
-        jbSend.setBounds(575, 410, 100, 35);
+        jbSend.setBounds(670, 465, 105, 35);
 
         //MESSAGES
-        jtpMessages.setBounds(10, 10, 400, 350);
+        jtpMessages.setBounds(10, 10, 500, 450);
         jtpMessages.setFont(font);
         jtpMessages.setMargin(new Insets(5, 5, 5, 5));
         jtpMessages.setEditable(false);
         JScrollPane jtpMessagesSP = new JScrollPane(jtpMessages);
-        jtpMessagesSP.setBounds(10, 10, 400, 350);
+        jtpMessagesSP.setBounds(10, 10, 500, 450);
 
         jtpMessages.setContentType("text/html");
         jtpMessages.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
         //BUTTON FOR DISCONNECTING
         final JButton jbDisconnect = new JButton("Rozłącz");
-        jbDisconnect.setFont(font);
-        jbDisconnect.setBounds(25, 410, 130, 35);
+        jbDisconnect.setFont(fontDisconnect);
+        jbDisconnect.setBounds(10, 510, 765, 35);
 
         //KEY LISTENER FOR SENDING
         jtfMessage.addKeyListener(new KeyAdapter() {
@@ -108,11 +109,11 @@ public class Client extends Thread {
         jtfPort.getDocument().addDocumentListener(new MsgListener(jtfAddress, jtfPort, jtfLogin, jbConnect));
         jtfLogin.getDocument().addDocumentListener(new MsgListener(jtfAddress, jtfPort, jtfLogin, jbConnect));
 
-        jtfAddress.setBounds(25, 380, 135, 35);
-        jtfPort.setBounds(200, 380, 130, 35);
-        jtfLogin.setBounds(340, 380, 130, 35);
+        jtfAddress.setBounds(10, 470, 230, 35);
+        jtfPort.setBounds(280, 470, 230, 35);
+        jtfLogin.setBounds(520, 470, 255, 35);
         jbConnect.setFont(font);
-        jbConnect.setBounds(20, 410, 500, 35);
+        jbConnect.setBounds(10, 515, 765, 35);
 
 
         jtpMessages.setBackground(new Color(133, 173, 237));
@@ -140,7 +141,7 @@ public class Client extends Thread {
                     port=Integer.parseInt(jtfPort.getText());
                     login=jtfLogin.getText();
 
-                    addToJTPane(jtpMessages,"Łączenie z "+ serverAddress+ " na porcie "+port+"...");
+                    addToJTPane(jtpMessages,"<i>Łączenie z "+ serverAddress+ " na porcie "+port+"...</i>");
                     server=new Socket(serverAddress,port);
                     addToJTPane(jtpMessages,"Połączono z "+server.getRemoteSocketAddress());
 

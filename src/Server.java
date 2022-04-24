@@ -23,12 +23,12 @@ public class Server {
         for(User u: this.clientsList){
             if(u.getLogin().equals(user)&&u!=userFrom){
                 found=true;
-                userFrom.getStreamOut().println(userFrom.toString()+" --> "+u.toString()+": "+msg);
+                userFrom.getStreamOut().println("<b>"+userFrom.toString()+"</b>"+" --> "+u.toString()+": "+msg);
                 u.getStreamOut().println("(<b>PW</b>)"+userFrom.toString()+": "+msg);
             }
         }
         if(!found){
-            userFrom.getStreamOut().println(userFrom.toString()+ "NIE UDAŁO SIĘ WYSŁAĆ: "+msg);
+            userFrom.getStreamOut().println("<b><span style='color:red'>"+userFrom.toString()+ " NIE UDAŁO SIĘ WYSŁAĆ: "+msg+"</span></b>");
         }
     }
 
@@ -64,7 +64,7 @@ public class Server {
             User newClient=new User(login,client);
             this.clientsList.add(newClient);
 
-            newClient.getStreamOut().println("Witaj "+ newClient.toString());
+            newClient.getStreamOut().println("<h2><b><span style='color:green'>"+"Witaj "+ newClient.toString() +"!</span></b></h2>");
 
             new Thread(new UserMsg(this,newClient)).start();
         }
