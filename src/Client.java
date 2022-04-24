@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Client extends Thread {
 
@@ -37,33 +39,35 @@ public class Client extends Thread {
         //FRAME
         final JFrame jfr = new JFrame("CatchMe Klient");
         jfr.getContentPane().setLayout(null);
-        jfr.setSize(600, 600);
+        jfr.setSize(700, 500);
         jfr.setResizable(false);
         jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //LIST
-        jtpList.setBounds(430, 10, 140, 350);
+        jtpList.setBounds(520, 25, 156, 320);
         jtpList.setEditable(true);
         jtpList.setFont(font);
-        jtpList.setMargin(new Insets(5, 5, 5, 5));
+        jtpList.setMargin(new Insets(6, 6, 6, 6));
         jtpList.setEditable(false);
         JScrollPane jtpListSP = new JScrollPane(jtpList);
-        jtpListSP.setBounds(430, 10, 140, 350);
-
-        //INPUT FOR MESSAGE
-        jtfMessage.setBounds(0, 380, 500, 50);
-        jtfMessage.setFont(font);
-        jtfMessage.setMargin(new Insets(5, 5, 5, 5));
-        final JScrollPane jtfMessageSP = new JScrollPane(jtfMessage);
-        jtfMessageSP.setBounds(20, 380, 650, 50);
+        jtpListSP.setBounds(520, 25, 156, 320);
 
         jtpList.setContentType("text/html");
         jtpList.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
+        //INPUT FOR MESSAGE
+        jtfMessage.setBounds(0, 350, 400, 50);
+        jtfMessage.setFont(font);
+        jtfMessage.setMargin(new Insets(6, 6, 6, 6));
+        final JScrollPane jtfMessageSP = new JScrollPane(jtfMessage);
+        jtfMessageSP.setBounds(25, 350, 650, 50);
+
+
+
         //BUTTON FOR SENDING
         final JButton jbSend = new JButton("Wyślij");
         jbSend.setFont(font);
-        jbSend.setBounds(500, 510, 100, 35);
+        jbSend.setBounds(575, 410, 100, 35);
 
         //MESSAGES
         jtpMessages.setBounds(10, 10, 400, 350);
@@ -79,7 +83,7 @@ public class Client extends Thread {
         //BUTTON FOR DISCONNECTING
         final JButton jbDisconnect = new JButton("Rozłącz");
         jbDisconnect.setFont(font);
-        jbDisconnect.setBounds(10, 510, 130, 35);
+        jbDisconnect.setBounds(25, 410, 130, 35);
 
         //KEY LISTENER FOR SENDING
         jtfMessage.addKeyListener(new KeyAdapter() {
@@ -90,7 +94,6 @@ public class Client extends Thread {
             }
         });
         jbSend.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 sendMsg();
             }
@@ -105,11 +108,11 @@ public class Client extends Thread {
         jtfPort.getDocument().addDocumentListener(new MsgListener(jtfAddress, jtfPort, jtfLogin, jbConnect));
         jtfLogin.getDocument().addDocumentListener(new MsgListener(jtfAddress, jtfPort, jtfLogin, jbConnect));
 
-        jtfAddress.setBounds(10, 450, 130, 35);
-        jtfPort.setBounds(180, 450, 130, 35);
-        jtfLogin.setBounds(340, 450, 130, 35);
+        jtfAddress.setBounds(25, 380, 135, 35);
+        jtfPort.setBounds(200, 380, 130, 35);
+        jtfLogin.setBounds(340, 380, 130, 35);
         jbConnect.setFont(font);
-        jbConnect.setBounds(20, 500, 500, 35);
+        jbConnect.setBounds(20, 410, 500, 35);
 
 
         jtpMessages.setBackground(new Color(133, 173, 237));
@@ -273,7 +276,16 @@ public class Client extends Thread {
                 while (!Thread.currentThread().isInterrupted()) {
                     msg=input.readLine();
                     if(msg!=null){
-
+                        if(msg.charAt(0)=='['){
+                            msg=msg.substring(1,msg.length()-1);
+                            ArrayList<String> userList=new ArrayList<String>(Arrays.asList(msg.split(", ")));
+                            jtpList.setText(null);
+                            for(String u:userList){
+                                addToJTPane(jtpList,u);
+                            }
+                        }else{
+                            addToJTPane(jtpMessages,msg);
+                        }
                     }
 
                 }
