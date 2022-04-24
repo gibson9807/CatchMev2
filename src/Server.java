@@ -33,7 +33,7 @@ public class Server {
     }
 
     public void broadcastMsgToAllUsers(String msg,User userFrom){
-        for(User u:clientsList){
+        for(User u:this.clientsList){
             u.getStreamOut().println(userFrom.toString()+": "+msg);
         }
     }
@@ -50,7 +50,7 @@ public class Server {
 
     public void run() throws IOException {
         serverSocket=new ServerSocket(port){
-            protected void endServer() throws IOException{
+            protected void finalize() throws IOException{
                 this.close();
             }
         };
@@ -64,6 +64,8 @@ public class Server {
             User newClient=new User(login,client);
             this.clientsList.add(newClient);
 
+            newClient.getStreamOut().println("Witaj "+ newClient.toString());
+
             new Thread(new UserMsg(this,newClient)).start();
         }
 
@@ -71,12 +73,12 @@ public class Server {
 
 
     public static void main(String[] args)throws IOException {
-        new Server(8080).run();
+        new Server(50000).run();
     }
 }
 class User{
     private static int userIDcounter=0;
-    private int userID=0;
+    private int userID;
     private PrintStream streamOut;
     private InputStream streamIn;
     private String login;
@@ -97,24 +99,24 @@ class User{
     }
 
     public int getUserID() {
-        return userID;
+        return this.userID;
     }
 
     public PrintStream getStreamOut() {
-        return streamOut;
+        return this.streamOut;
     }
 
     public InputStream getStreamIn() {
-        return streamIn;
+        return this.streamIn;
     }
 
     public String getLogin() {
-        return login;
+        return this.login;
     }
 
-    public Socket getClient() {
-        return client;
-    }
+//    public Socket getClient() {
+//        return this.client;
+//    }
 }
 class UserMsg implements Runnable{
 
@@ -140,7 +142,7 @@ class UserMsg implements Runnable{
                 if(msg.contains(" ")){
 
                     server.sendMsgToUser(
-                            msg.substring((msg.indexOf(" "))+1,msg.length()),user,msg.substring(1,msg.indexOf((" ")))
+                            msg.substring((msg.indexOf(" "))+1),user,msg.substring(1,msg.indexOf((" ")))
                     );
 
                 }
@@ -150,7 +152,7 @@ class UserMsg implements Runnable{
             }
         }
         server.deleteUser(user);
-        server.distributeToAllUsers();
+        this.server.distributeToAllUsers();
         scanner.close();
     }
 }
