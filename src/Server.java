@@ -13,62 +13,69 @@ public class Server {
     private ServerSocket serverSocket;
     private int port;
 
-    public Server(int port){
-        this.port=port;
-        this.clientsList=new ArrayList<User>();
+    public Server(int port) {
+        this.port = port;
+        this.clientsList = new ArrayList<User>();
     }
 
-    public void sendMsgToUser(String msg, User userFrom,String user){
-        boolean found=false;
-        for(User u: this.clientsList){
-            if(u.getLogin().equals(user)&&u!=userFrom){
-                found=true;
-                userFrom.getStreamOut().println("<b>"+userFrom.toString()+"</b>"+" --> "+u.toString()+": "+msg);
-                u.getStreamOut().println("(<b>PW</b>)"+userFrom.toString()+": "+msg);
+    public void sendMsgToUser(String msg, User userFrom, String user) {
+        boolean found = false;
+        for (User u : this.clientsList) {
+            if (u.getLogin().equals(user) && u != userFrom) {
+                found = true;
+                userFrom.getStreamOut().println("<b>" + userFrom.toString() + "</b>" + " --> " + u.toString() + ": " + msg);
+                u.getStreamOut().println("(<b>PW</b>)" + userFrom.toString() + ": " + msg);
             }
         }
-        if(!found){
-            userFrom.getStreamOut().println("<b><span style='color:red'>"+userFrom.toString()+ " NIE UDAŁO SIĘ WYSŁAĆ: "+msg+"</span></b>");
+        if (!found) {
+            userFrom.getStreamOut().println("<b><span style='color:red'>" + userFrom.toString() + " NIE UDAŁO SIĘ WYSŁAĆ: " + msg + "</span></b>");
         }
     }
 
-    public void broadcastMsgToAllUsers(String msg,User userFrom){
-        for(User u:this.clientsList){
-            u.getStreamOut().println(userFrom.toString()+": "+msg);
+    public void broadcastMsgToAllUsers(String msg, User userFrom) {
+        for (User u : this.clientsList) {
+            u.getStreamOut().println(userFrom.toString() + ": " + msg);
         }
     }
 
-    public void distributeToAllUsers(){
-        for(User u:this.clientsList){
+    public void distributeToAllUsers() {
+        for (User u : this.clientsList) {
             u.getStreamOut().println(this.clientsList);
         }
     }
 
-    public void deleteUser(User user){
+    public void deleteUser(User user) {
         this.clientsList.remove(user);
     }
 
     public void run() throws IOException {
-        serverSocket=new ServerSocket(port){
-            protected void finalize() throws IOException{
+        serverSocket = new ServerSocket(port) {
+            protected void finalize() throws IOException {
                 this.close();
             }
         };
 
-        while(true){
-            Socket client= serverSocket.accept();
+        while (true) {
+            Socket client = serverSocket.accept();
 
-            String login=(new Scanner(client.getInputStream())).nextLine();
-            System.out.println("Nowy Klient: "+login+" Host: "+client.getInetAddress().getHostAddress());
+            String login = (new Scanner(client.getInputStream())).nextLine();
+            System.out.println("Nowy Klient: " + login + " Host: " + client.getInetAddress().getHostAddress());
+            saveUserNameToFile(login);
 
-            User newClient=new User(login,client);
+            User newClient = new User(login, client);
             this.clientsList.add(newClient);
+            System.out.println(newClient);
 
-            newClient.getStreamOut().println("<h2><b><span style='color:green'>"+"Witaj "+ newClient.toString() +"!</span></b></h2>");
+            newClient.getStreamOut().println("<h2><b><span style='color:green'>" + "Witaj " + newClient.toString() + "!</span></b></h2>");
 
-            new Thread(new UserMsg(this,newClient)).start();
+            new Thread(new UserMsg(this, newClient)).start();
         }
 
+    }
+
+    private void saveUserNameToFile(String login) {
+        UserNameDAO userNameDAO = new UserNameDAO();
+        userNameDAO.setNameToFile(login);
     }
 
 
@@ -76,8 +83,9 @@ public class Server {
         new Server(50000).run();
     }
 }
-class User{
-    private static int userIDcounter=0;
+
+class User {
+    private static int userIDcounter = 0;
     private int userID;
     private PrintStream streamOut;
     private InputStream streamIn;
@@ -90,7 +98,7 @@ class User{
         this.streamIn = client.getInputStream();
         this.login = login;
         this.client = client;
-        userIDcounter+=1;
+        userIDcounter += 1;
     }
 
     @Override
@@ -118,14 +126,15 @@ class User{
 //        return this.client;
 //    }
 }
-class UserMsg implements Runnable{
+
+class UserMsg implements Runnable {
 
     private Server server;
     private User user;
 
-    public UserMsg(Server server, User user){
-        this.server =server;
-        this.user=user;
+    public UserMsg(Server server, User user) {
+        this.server = server;
+        this.user = user;
         this.server.distributeToAllUsers();
     }
 
@@ -134,21 +143,20 @@ class UserMsg implements Runnable{
     public void run() {
         String msg;
 
-        Scanner scanner=new Scanner(this.user.getStreamIn());
-        while(scanner.hasNextLine()){
-            msg=scanner.nextLine();
+        Scanner scanner = new Scanner(this.user.getStreamIn());
+        while (scanner.hasNextLine()) {
+            msg = scanner.nextLine();
 
-            if (msg.startsWith("@")){
-                if(msg.contains(" ")){
+            if (msg.startsWith("@")) {
+                if (msg.contains(" ")) {
 
                     server.sendMsgToUser(
-                            msg.substring((msg.indexOf(" "))+1),user,msg.substring(1,msg.indexOf((" ")))
+                            msg.substring((msg.indexOf(" ")) + 1), user, msg.substring(1, msg.indexOf((" ")))
                     );
 
                 }
-            }else
-            {
-                server.broadcastMsgToAllUsers(msg,user);
+            } else {
+                server.broadcastMsgToAllUsers(msg, user);
             }
         }
         server.deleteUser(user);

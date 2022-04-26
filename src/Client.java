@@ -1,11 +1,13 @@
-import javax.jws.Oneway;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,7 +37,7 @@ public class Client extends Thread {
         this.login = "nazwa";
 
         Font font = new Font("Verdana", Font.PLAIN, 12);
-        Font fontDisconnect=new Font("Monospaced",Font.BOLD,25);
+        Font fontDisconnect = new Font("Monospaced", Font.BOLD, 25);
 
         //FRAME
         final JFrame jfr = new JFrame("CatchMe Klient");
@@ -62,7 +64,6 @@ public class Client extends Thread {
         jtfMessage.setMargin(new Insets(5, 5, 5, 5));
         final JScrollPane jtfMessageSP = new JScrollPane(jtfMessage);
         jtfMessageSP.setBounds(10, 465, 650, 35);
-
 
 
         //BUTTON FOR SENDING
@@ -128,29 +129,27 @@ public class Client extends Thread {
         jfr.add(jbConnect);
         jfr.setVisible(true);
 
-
         addToJTPane(jtpMessages,
                 "<h3> W CELU WYSŁANIA WIADOMOŚCI PRYWATNEJ WPISZ @nazwa_adresata");
-
 
         jbConnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
-                    serverAddress=jtfAddress.getText();
-                    port=Integer.parseInt(jtfPort.getText());
-                    login=jtfLogin.getText();
+                try {
+                    serverAddress = jtfAddress.getText();
+                    port = Integer.parseInt(jtfPort.getText());
+                    checkLoginIfExists(jtfLogin);
 
-                    addToJTPane(jtpMessages,"<i>Łączenie z "+ serverAddress+ " na porcie "+port+"...</i>");
-                    server=new Socket(serverAddress,port);
-                    addToJTPane(jtpMessages,"Połączono z "+server.getRemoteSocketAddress());
+                    addToJTPane(jtpMessages, "<i>Łączenie z " + serverAddress + " na porcie " + port + "...</i>");
+                    server = new Socket(serverAddress, port);
+                    addToJTPane(jtpMessages, "Połączono z " + server.getRemoteSocketAddress());
 
-                    input=new BufferedReader(new InputStreamReader(server.getInputStream()));
-                    output=new PrintWriter(server.getOutputStream(),true);
+                    input = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                    output = new PrintWriter(server.getOutputStream(), true);
 
                     output.println(login);
 
-                    read=new Read();
+                    read = new Read();
                     read.start();
                     //REMOVING ELEMENTS FROM CONNECTION WINDOW
                     jfr.remove(jtfAddress);
@@ -166,9 +165,9 @@ public class Client extends Thread {
                     jtpMessages.setBackground(Color.WHITE);
                     jtpList.setBackground(Color.WHITE);
 
-                }catch(Exception ex){
-                    addToJTPane(jtpMessages,"Nie udało się połączyć z serwerem");
-                    JOptionPane.showMessageDialog(jfr,ex.getMessage());
+                } catch (Exception ex) {
+                    addToJTPane(jtpMessages, "Nie udało się połączyć z serwerem");
+                    JOptionPane.showMessageDialog(jfr, ex.getMessage());
                 }
             }
         });
@@ -193,14 +192,27 @@ public class Client extends Thread {
                 jtpList.setText(null);
                 jtpMessages.setBackground(Color.DARK_GRAY);
                 jtpList.setBackground(Color.DARK_GRAY);
-                addToJTPane(jtpMessages,"Rozłączono");
+                addToJTPane(jtpMessages, "Rozłączono");
                 output.close();
             }
         });
-
     }
 
+    private void checkLoginIfExists(JTextField jtfLogin) {
+        ArrayList<String> userNameList = getUserListFromFIle();
+        boolean isTheSame = false;
+        do {
+            login = jtfLogin.getText();
+            for (String name : userNameList) {
+                isTheSame = name.equals(login);
+            }
+        } while (isTheSame);
+    }
 
+    private ArrayList<String> getUserListFromFIle() {
+        UserNameDAO userNameDAO = new UserNameDAO();
+        return userNameDAO.readNameFromFile();
+    }
 
     public void sendMsg() {
         try {
@@ -218,13 +230,13 @@ public class Client extends Thread {
     }
 
 
-    public void addToJTPane(JTextPane jtp,String msg){
-        HTMLDocument doc=(HTMLDocument)jtp.getDocument();
-        HTMLEditorKit editorKit=(HTMLEditorKit) jtp.getEditorKit();
-        try{
-            editorKit.insertHTML(doc, doc.getLength(), msg,0,0,null);
+    public void addToJTPane(JTextPane jtp, String msg) {
+        HTMLDocument doc = (HTMLDocument) jtp.getDocument();
+        HTMLEditorKit editorKit = (HTMLEditorKit) jtp.getEditorKit();
+        try {
+            editorKit.insertHTML(doc, doc.getLength(), msg, 0, 0, null);
             jtp.setCaretPosition(doc.getLength());
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -265,9 +277,6 @@ public class Client extends Thread {
         }
     }
 
-
-
-
     class Read extends Thread {
 
         public void run() {
@@ -275,17 +284,17 @@ public class Client extends Thread {
 
             try {
                 while (!Thread.currentThread().isInterrupted()) {
-                    msg=input.readLine();
-                    if(msg!=null){
-                        if(msg.charAt(0)=='['){
-                            msg=msg.substring(1,msg.length()-1);
-                            ArrayList<String> userList=new ArrayList<String>(Arrays.asList(msg.split(", ")));
+                    msg = input.readLine();
+                    if (msg != null) {
+                        if (msg.charAt(0) == '[') {
+                            msg = msg.substring(1, msg.length() - 1);
+                            ArrayList<String> userList = new ArrayList<String>(Arrays.asList(msg.split(", ")));
                             jtpList.setText(null);
-                            for(String u:userList){
-                                addToJTPane(jtpList,u);
+                            for (String u : userList) {
+                                addToJTPane(jtpList, u);
                             }
-                        }else{
-                            addToJTPane(jtpMessages,msg);
+                        } else {
+                            addToJTPane(jtpMessages, msg);
                         }
                     }
 
