@@ -138,7 +138,7 @@ public class Client extends Thread {
                 try {
                     serverAddress = jtfAddress.getText();
                     port = Integer.parseInt(jtfPort.getText());
-                    checkLoginIfExists(jtfLogin);
+                    boolean nameUserExist = isUserLoginExistsInFIle(jtfLogin);
 
                     addToJTPane(jtpMessages, "<i>Łączenie z " + serverAddress + " na porcie " + port + "...</i>");
                     server = new Socket(serverAddress, port);
@@ -198,115 +198,117 @@ public class Client extends Thread {
         });
     }
 
-    private void checkLoginIfExists(JTextField jtfLogin) {
+    private boolean isUserLoginExistsInFIle(JTextField jtfLogin) {
         ArrayList<String> userNameList = getUserListFromFIle();
         boolean isTheSame = false;
-        do {
-            login = jtfLogin.getText();
-            for (String name : userNameList) {
-                isTheSame = name.equals(login);
+
+        login = jtfLogin.getText();
+        for (String name : userNameList) {
+            if (name.equals(login)) {
+                return true;
             }
-        } while (isTheSame);
+        }
+        return isTheSame;
     }
 
-    private ArrayList<String> getUserListFromFIle() {
-        UserNameDAO userNameDAO = new UserNameDAO();
-        return userNameDAO.readNameFromFile();
-    }
-
-    public void sendMsg() {
-        try {
-            String msg = jtfMessage.getText();
-            if (!msg.equals("")) {
-                output.println(msg);
-                jtfMessage.requestFocus();
-                jtfMessage.setText(null);
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-            System.exit(0);
+        private ArrayList<String> getUserListFromFIle() {
+            UserNameDAO userNameDAO = new UserNameDAO();
+            return userNameDAO.readNameFromFile();
         }
 
-    }
-
-
-    public void addToJTPane(JTextPane jtp, String msg) {
-        HTMLDocument doc = (HTMLDocument) jtp.getDocument();
-        HTMLEditorKit editorKit = (HTMLEditorKit) jtp.getEditorKit();
-        try {
-            editorKit.insertHTML(doc, doc.getLength(), msg, 0, 0, null);
-            jtp.setCaretPosition(doc.getLength());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public class MsgListener implements DocumentListener {
-
-        JTextField jtfA;
-        JTextField jtfP;
-        JTextField jtfL;
-        JButton jbC;
-
-        public MsgListener(JTextField jtfA, JTextField jtfP, JTextField jtfL, JButton jbC) {
-            this.jtfA = jtfA;
-            this.jtfP = jtfP;
-            this.jtfL = jtfL;
-            this.jbC = jbC;
-        }
-
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-            jbC.setEnabled(!jtfA.getText().trim().equals("") &&
-                    !jtfP.getText().trim().equals("") &&
-                    !jtfL.getText().trim().equals(""));
-        }
-
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-            jbC.setEnabled(!jtfA.getText().trim().equals("") &&
-                    !jtfP.getText().trim().equals("") &&
-                    !jtfL.getText().trim().equals(""));
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent e) {
-            jbC.setEnabled(!jtfA.getText().trim().equals("") &&
-                    !jtfP.getText().trim().equals("") &&
-                    !jtfL.getText().trim().equals(""));
-        }
-    }
-
-    class Read extends Thread {
-
-        public void run() {
-            String msg;
-
+        public void sendMsg () {
             try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    msg = input.readLine();
-                    if (msg != null) {
-                        if (msg.charAt(0) == '[') {
-                            msg = msg.substring(1, msg.length() - 1);
-                            ArrayList<String> userList = new ArrayList<String>(Arrays.asList(msg.split(", ")));
-                            jtpList.setText(null);
-                            for (String u : userList) {
-                                addToJTPane(jtpList, u);
-                            }
-                        } else {
-                            addToJTPane(jtpMessages, msg);
-                        }
-                    }
-
+                String msg = jtfMessage.getText();
+                if (!msg.equals("")) {
+                    output.println(msg);
+                    jtfMessage.requestFocus();
+                    jtfMessage.setText(null);
                 }
-            } catch (IOException ex) {
-                System.out.println("Nie udało się przetworzyć wiadomości");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+                System.exit(0);
+            }
+
+        }
+
+
+        public void addToJTPane (JTextPane jtp, String msg){
+            HTMLDocument doc = (HTMLDocument) jtp.getDocument();
+            HTMLEditorKit editorKit = (HTMLEditorKit) jtp.getEditorKit();
+            try {
+                editorKit.insertHTML(doc, doc.getLength(), msg, 0, 0, null);
+                jtp.setCaretPosition(doc.getLength());
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
-    }
 
-    public static void main(String[] args) {
-        Client client = new Client();
+        public class MsgListener implements DocumentListener {
+
+            JTextField jtfA;
+            JTextField jtfP;
+            JTextField jtfL;
+            JButton jbC;
+
+            public MsgListener(JTextField jtfA, JTextField jtfP, JTextField jtfL, JButton jbC) {
+                this.jtfA = jtfA;
+                this.jtfP = jtfP;
+                this.jtfL = jtfL;
+                this.jbC = jbC;
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                jbC.setEnabled(!jtfA.getText().trim().equals("") &&
+                        !jtfP.getText().trim().equals("") &&
+                        !jtfL.getText().trim().equals(""));
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                jbC.setEnabled(!jtfA.getText().trim().equals("") &&
+                        !jtfP.getText().trim().equals("") &&
+                        !jtfL.getText().trim().equals(""));
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                jbC.setEnabled(!jtfA.getText().trim().equals("") &&
+                        !jtfP.getText().trim().equals("") &&
+                        !jtfL.getText().trim().equals(""));
+            }
+        }
+
+        class Read extends Thread {
+
+            public void run() {
+                String msg;
+
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        msg = input.readLine();
+                        if (msg != null) {
+                            if (msg.charAt(0) == '[') {
+                                msg = msg.substring(1, msg.length() - 1);
+                                ArrayList<String> userList = new ArrayList<String>(Arrays.asList(msg.split(", ")));
+                                jtpList.setText(null);
+                                for (String u : userList) {
+                                    addToJTPane(jtpList, u);
+                                }
+                            } else {
+                                addToJTPane(jtpMessages, msg);
+                            }
+                        }
+
+                    }
+                } catch (IOException ex) {
+                    System.out.println("Nie udało się przetworzyć wiadomości");
+                }
+            }
+        }
+
+        public static void main (String[]args){
+            Client client = new Client();
+        }
     }
-}
 

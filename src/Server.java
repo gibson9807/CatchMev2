@@ -15,7 +15,7 @@ public class Server {
 
     public Server(int port) {
         this.port = port;
-        this.clientsList = new ArrayList<User>();
+        this.clientsList = new ArrayList<>();
     }
 
     public void sendMsgToUser(String msg, User userFrom, String user) {
@@ -81,6 +81,12 @@ public class Server {
 
     public static void main(String[] args)throws IOException {
         new Server(50000).run();
+    }
+
+    protected void finalize()
+    {
+        UserNameDAO userNameDAO = new UserNameDAO();
+        userNameDAO.clearFile();
     }
 }
 

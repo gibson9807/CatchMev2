@@ -37,4 +37,18 @@ public class UserNameDAO implements Serializable {
         }
         return userNameList;
     }
+
+    public void clearFile() {
+        FileWriter fwOb = null;
+        try {
+            fwOb = new FileWriter("FileName", false);
+            PrintWriter pwOb = new PrintWriter(fwOb, false);
+            pwOb.flush();
+            pwOb.close();
+            fwOb.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
