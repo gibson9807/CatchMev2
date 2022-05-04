@@ -5,13 +5,10 @@ import java.util.Scanner;
 public class UserNameDAO implements Serializable {
     final static String PATH_TO_FILE = "src/resources/nameUser.txt";
 
-    public void setNameToFile(final String name)
-    {
-        if (name != null)
-        {
-            try
-            {
-                FileWriter fileWriter = new FileWriter(PATH_TO_FILE);
+    public void setNameToFile(final String name) {
+        if (name != null) {
+            try {
+                FileWriter fileWriter = new FileWriter(PATH_TO_FILE, true);
                 PrintWriter printWriter = new PrintWriter(fileWriter);
                 printWriter.println(name);
 
@@ -22,8 +19,7 @@ public class UserNameDAO implements Serializable {
         }
     }
 
-    public ArrayList<String> readNameFromFile()
-    {
+    public ArrayList<String> readNameFromFile() {
         ArrayList<String> userNameList = new ArrayList<>();
         try {
             File myObj = new File(PATH_TO_FILE);
@@ -39,16 +35,28 @@ public class UserNameDAO implements Serializable {
     }
 
     public void clearFile() {
-        FileWriter fwOb = null;
+        FileWriter fileWriter = null;
         try {
-            fwOb = new FileWriter("FileName", false);
-            PrintWriter pwOb = new PrintWriter(fwOb, false);
+            fileWriter = new FileWriter("FileName", false);
+            PrintWriter pwOb = new PrintWriter(fileWriter, false);
             pwOb.flush();
             pwOb.close();
-            fwOb.close();
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    public void removeUserNameFromFile(String login) {
+        if (login != null) {
+            ArrayList<String> userList = readNameFromFile();
+            clearFile();
+            for (String actual : userList) {
+                if (!login.equals(actual)) {
+                    setNameToFile(actual);
+                }
+            }
+        }
     }
 }

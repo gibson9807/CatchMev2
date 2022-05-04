@@ -9,9 +9,9 @@ import java.util.Scanner;
 
 public class Server {
 
-    private List<User> clientsList;
+    private final List<User> clientsList;
     private ServerSocket serverSocket;
-    private int port;
+    private final int port;
 
     public Server(int port) {
         this.port = port;
@@ -79,12 +79,11 @@ public class Server {
     }
 
 
-    public static void main(String[] args)throws IOException {
+    public static void main(String[] args) throws IOException {
         new Server(50000).run();
     }
 
-    protected void finalize()
-    {
+    protected void finalize() {
         UserNameDAO userNameDAO = new UserNameDAO();
         userNameDAO.clearFile();
     }
@@ -153,7 +152,7 @@ class UserMsg implements Runnable {
         while (scanner.hasNextLine()) {
             msg = scanner.nextLine();
 
-            if (msg.startsWith("@")) {
+            if (msg.startsWith("@")) { // send msg to @user
                 if (msg.contains(" ")) {
 
                     server.sendMsgToUser(
@@ -162,7 +161,7 @@ class UserMsg implements Runnable {
 
                 }
             } else {
-                server.broadcastMsgToAllUsers(msg, user);
+                server.broadcastMsgToAllUsers(msg, user); // send msg to all user
             }
         }
         server.deleteUser(user);
