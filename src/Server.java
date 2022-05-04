@@ -40,12 +40,18 @@ public class Server {
 
     public void distributeToAllUsers() {
         for (User u : this.clientsList) {
-            u.getStreamOut().println(this.clientsList);
+            u.getStreamOut().println(this.clientsList + " 43---");
         }
     }
 
     public void deleteUser(User user) {
+        removeUserNameFromFile(user.getLogin());
         this.clientsList.remove(user);
+    }
+
+    private void removeUserNameFromFile(String login) {
+        UserNameDAO userNameDAO = new UserNameDAO();
+        userNameDAO.removeUserNameFromFile(login);
     }
 
     public void run() throws IOException {
@@ -64,7 +70,7 @@ public class Server {
 
             User newClient = new User(login, client);
             this.clientsList.add(newClient);
-            System.out.println(newClient);
+            System.out.println(newClient + " 67");
 
             newClient.getStreamOut().println("<h2><b><span style='color:green'>" + "Witaj " + newClient.toString() + "!</span></b></h2>");
 
@@ -91,10 +97,10 @@ public class Server {
 
 class User {
     private static int userIDcounter = 0;
-    private int userID;
-    private PrintStream streamOut;
-    private InputStream streamIn;
-    private String login;
+    private final int userID;
+    private final PrintStream streamOut;
+    private final InputStream streamIn;
+    private final String login;
     private Socket client;
 
     public User(String login, Socket client) throws IOException {
@@ -134,12 +140,13 @@ class User {
 
 class UserMsg implements Runnable {
 
-    private Server server;
-    private User user;
+    private final Server server;
+    private final User user;
 
     public UserMsg(Server server, User user) {
         this.server = server;
         this.user = user;
+        System.out.println(user.getLogin() + " 143 ---- ");
         this.server.distributeToAllUsers();
     }
 

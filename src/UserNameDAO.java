@@ -35,13 +35,11 @@ public class UserNameDAO implements Serializable {
     }
 
     public void clearFile() {
-        FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter("FileName", false);
-            PrintWriter pwOb = new PrintWriter(fileWriter, false);
-            pwOb.flush();
-            pwOb.close();
-            fileWriter.close();
+            File file = new File(PATH_TO_FILE);
+            PrintWriter writer = new PrintWriter(file);
+            writer.print("");
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

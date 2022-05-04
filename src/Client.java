@@ -175,7 +175,7 @@ public class Client extends Thread {
                 }
             }
         });
-
+        //  DISCONNECT
         jbDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,8 +222,8 @@ public class Client extends Thread {
     }
 
     private void removeUserNameFromFile(String login) {
-        UserNameDAO userNameDAO = new UserNameDAO();
-        userNameDAO.removeUserNameFromFile(login);
+       /* UserNameDAO userNameDAO = new UserNameDAO();
+        userNameDAO.removeUserNameFromFile(login);*/
     }
 
     public void sendMsg() {
