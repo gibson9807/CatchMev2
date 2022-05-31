@@ -1,3 +1,5 @@
+package ClientApp;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -9,16 +11,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Client extends Thread {
 
-    private String login;
+   /* private String login;
     private int port;
     private String serverAddress;
 
@@ -29,73 +29,73 @@ public class Client extends Thread {
 
     final JTextField jtfMessage = new JTextField();
     final JTextPane jtpMessages = new JTextPane();
-    final JTextPane jtpList = new JTextPane();
+    final JTextPane jtpList = new JTextPane();*/
 
     public Client() {
-        this.serverAddress = "localhost";
+        /*this.serverAddress = "localhost";
         this.port = 50000;
-        this.login = "nazwa";
-
-        Font font = new Font("Verdana", Font.PLAIN, 12);
-        Font fontDisconnect = new Font("Monospaced", Font.BOLD, 25);
+        this.login = "nazwa";*/
+        ClientService service = ClientService.getInstance();
+        service.loadStartFrame();
 
         //FRAME
-        final JFrame jfr = new JFrame("CatchMe Klient");
+        /*final JFrame jfr = new JFrame("CatchMe Klient"); //  <-------------------------------------------------- start frame
         jfr.getContentPane().setLayout(null);
         jfr.setSize(800, 600);
         jfr.setResizable(false);
-        jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);*/
+
 
         //LIST
-        jtpList.setBounds(520, 10, 255, 450);
-        jtpList.setEditable(true);
-        jtpList.setFont(font);
-        jtpList.setMargin(new Insets(5, 5, 5, 5));
-        jtpList.setEditable(false);
+       /* jtpList.setBounds(520, 10, 255, 450);
+
         JScrollPane jtpListSP = new JScrollPane(jtpList);
         jtpListSP.setBounds(520, 10, 255, 450);
+        jtpListSP.setBackground(new Color(123454));
+        jtpList.setBackground(new Color(123454));*/
 
-        jtpList.setContentType("text/html");
-        jtpList.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+
+       /* jtpList.setContentType("text/html");
+        jtpList.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);*/
 
         //INPUT FOR MESSAGE
-        jtfMessage.setBounds(10, 465, 650, 35);
-        jtfMessage.setFont(font);
-        jtfMessage.setMargin(new Insets(5, 5, 5, 5));
+       /* jtfMessage.setBounds(10, 465, 650, 35);
+
         final JScrollPane jtfMessageSP = new JScrollPane(jtfMessage);
         jtfMessageSP.setBounds(10, 465, 650, 35);
-
+        jtfMessageSP.setBackground(new Color(987265));
+        jtfMessage.setBackground(new Color(987265));*/
 
         //BUTTON FOR SENDING
-        final JButton jbSend = new JButton("Wyślij");
-        jbSend.setFont(font);
+        /*final JButton jbSend = new JButton("Wyślij");
         jbSend.setBounds(670, 465, 105, 35);
 
         //MESSAGES
         jtpMessages.setBounds(10, 10, 500, 450);
-        jtpMessages.setFont(font);
-        jtpMessages.setMargin(new Insets(5, 5, 5, 5));
-        jtpMessages.setEditable(false);
+
         JScrollPane jtpMessagesSP = new JScrollPane(jtpMessages);
         jtpMessagesSP.setBounds(10, 10, 500, 450);
+        jtpMessagesSP.setBackground(new Color(57899323));
+        jtpMessages.setBackground(new Color(57899323));
 
         jtpMessages.setContentType("text/html");
-        jtpMessages.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        jtpMessages.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);*/
 
         //BUTTON FOR DISCONNECTING
-        final JButton jbDisconnect = new JButton("Rozłącz");
-        jbDisconnect.setFont(fontDisconnect);
-        jbDisconnect.setBounds(10, 510, 765, 35);
+        /*final JButton jbDisconnect = new JButton("Rozłącz");
+        //jbDisconnect.setFont(fontDisconnect);
+        jbDisconnect.setBounds(10, 510, 765, 35);*/
 
         //KEY LISTENER FOR SENDING
-        jtfMessage.addKeyListener(new KeyAdapter() {
+        /*jtfMessage.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     sendMsg();
                 }
             }
-        });
-        jbSend.addActionListener(new ActionListener() {
+        });*/
+        /*jbSend.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 sendMsg();
             }
@@ -113,12 +113,12 @@ public class Client extends Thread {
         jtfAddress.setBounds(10, 470, 230, 35);
         jtfPort.setBounds(280, 470, 230, 35);
         jtfLogin.setBounds(520, 470, 255, 35);
-        jbConnect.setFont(font);
-        jbConnect.setBounds(10, 515, 765, 35);
+        //jbConnect.setFont(font);
+        jbConnect.setBounds(10, 515, 765, 35);*/
 
 
-        jtpMessages.setBackground(new Color(133, 173, 237));
-        jtpList.setBackground(new Color(133, 173, 237));
+        /*jtpMessages.setBackground(new Color(155, 17, 27));
+        jtpList.setBackground(new Color(173, 173, 237));
 
         //ADDING ELEMENTS TO FRAME
         jfr.add(jtfAddress);
@@ -130,19 +130,15 @@ public class Client extends Thread {
         jfr.setVisible(true);
 
         addToJTPane(jtpMessages,
-                "<h3> W CELU WYSŁANIA WIADOMOŚCI PRYWATNEJ WPISZ @nazwa_adresata");
+                "<h3> W CELU WYSŁANIA WIADOMOŚCI PRYWATNEJ WPISZ @nazwa_adresata");*/
 
-        jbConnect.addActionListener(new ActionListener() {
+        /*jbConnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     serverAddress = jtfAddress.getText();
                     port = Integer.parseInt(jtfPort.getText());
-                    //String login = jtfLogin.getText();
-                    do {
-                        JOptionPane.showMessageDialog(jfr, "Podaj nowa nazwe uzytkownika");
-                        login = JOptionPane.showInputDialog("Login");
-                    } while (isUserLoginExistsInFIle(login));
+                    String login = jtfLogin.getText();
 
                     addToJTPane(jtpMessages, "<i>Łączenie z " + serverAddress + " na porcie " + port + "...</i>");
                     server = new Socket(serverAddress, port);
@@ -150,11 +146,11 @@ public class Client extends Thread {
 
                     input = new BufferedReader(new InputStreamReader(server.getInputStream()));
                     output = new PrintWriter(server.getOutputStream(), true);
+                    System.out.println(login);
 
                     output.println(login);
 
-                    read = new Read();
-                    read.start();
+
                     //REMOVING ELEMENTS FROM CONNECTION WINDOW
                     jfr.remove(jtfAddress);
                     jfr.remove(jtfPort);
@@ -166,17 +162,17 @@ public class Client extends Thread {
                     jfr.add(jbDisconnect);
 
                     jfr.repaint();
-                    jtpMessages.setBackground(Color.WHITE);
-                    jtpList.setBackground(Color.WHITE);
+                    jtpMessages.setBackground(new Color(155, 17, 27));
+                    jtpList.setBackground(new Color(173, 173, 237));
 
                 } catch (Exception ex) {
                     addToJTPane(jtpMessages, "Nie udało się połączyć z serwerem");
                     JOptionPane.showMessageDialog(jfr, ex.getMessage());
                 }
             }
-        });
+        });*/
         //  DISCONNECT
-        jbDisconnect.addActionListener(new ActionListener() {
+       /* jbDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 jfr.add(jtfAddress);
@@ -200,9 +196,10 @@ public class Client extends Thread {
                 removeUserNameFromFile(login);
                 output.close();
             }
-        });
+        });*/
     }
 
+/*
     private boolean isUserLoginExistsInFIle(String login) {
         if (login == null) return true;
         ArrayList<String> userNameList = getUserListFromFIle();
@@ -217,13 +214,13 @@ public class Client extends Thread {
     }
 
     private ArrayList<String> getUserListFromFIle() {
-        UserNameDAO userNameDAO = new UserNameDAO();
-        return userNameDAO.readNameFromFile();
+        *//*ClientApp.UserNameDAO userNameDAO = new ClientApp.UserNameDAO();
+        return userNameDAO.readNameFromFile();*//*
+        return null;
     }
 
     private void removeUserNameFromFile(String login) {
-       /* UserNameDAO userNameDAO = new UserNameDAO();
-        userNameDAO.removeUserNameFromFile(login);*/
+       *//* *//*
     }
 
     public void sendMsg() {
@@ -287,9 +284,9 @@ public class Client extends Thread {
                     !jtfP.getText().trim().equals("") &&
                     !jtfL.getText().trim().equals(""));
         }
-    }
+    }*/
 
-    class Read extends Thread {
+   /* class Read extends Thread {
 
         public void run() {
             String msg;
@@ -316,7 +313,7 @@ public class Client extends Thread {
             }
         }
     }
-
+*/
     public static void main(String[] args) {
         Client client = new Client();
     }
