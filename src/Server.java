@@ -1,3 +1,5 @@
+import ClientApp.UserNameDAO;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -40,7 +42,7 @@ public class Server {
 
     public void distributeToAllUsers() {
         for (User u : this.clientsList) {
-            u.getStreamOut().println(this.clientsList + " 43---");
+            u.getStreamOut().println(this.clientsList);
         }
     }
 
@@ -70,7 +72,7 @@ public class Server {
 
             User newClient = new User(login, client);
             this.clientsList.add(newClient);
-            System.out.println(newClient + " 67");
+            System.out.println(newClient);
 
             newClient.getStreamOut().println("<h2><b><span style='color:green'>" + "Witaj " + newClient.toString() + "!</span></b></h2>");
 
